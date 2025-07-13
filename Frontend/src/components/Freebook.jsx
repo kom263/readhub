@@ -7,24 +7,24 @@ import Slider from "react-slick";
 import axios from "axios";
 
 import Cards from "./Cards";
+
 function Freebook() {
   const [book, setBook] = useState([]);
+
   useEffect(() => {
     const getBook = async () => {
       try {
         const res = await axios.get("http://localhost:4001/book");
-
-        const data = res.data.filter((data) => data.category === "Free");
-        console.log(data);
-        setBook(data);
+        const freeBooks = res.data.filter((item) => item.category === "Free");
+        setBook(freeBooks);
       } catch (error) {
-        console.log(error);
+        console.error("Failed to fetch free courses:", error);
       }
     };
     getBook();
   }, []);
 
-  var settings = {
+  const settings = {
     dots: true,
     infinite: false,
     speed: 500,
@@ -58,27 +58,31 @@ function Freebook() {
       },
     ],
   };
-  return (
-    <>
-      <div className=" max-w-screen-2xl container mx-auto md:px-20 px-4">
-        <div>
-          <h1 className="font-semibold text-xl pb-2">Free Offered Courses</h1>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-            Accusantium veritatis alias pariatur ad dolor repudiandae eligendi
-            corporis nulla non suscipit, iure neque earum?
-          </p>
-        </div>
 
-        <div>
+  return (
+    <div className="max-w-screen-2xl container mx-auto md:px-20 px-4">
+      <section>
+        <h1 className="font-semibold text-xl pb-2">Free Offered Courses</h1>
+        <p className="mb-6 text-gray-700">
+          Discover a curated collection of free courses designed to help you
+          enhance your skills and jumpstart your learning journey. Explore
+          these valuable resources and start growing today—completely free.
+        </p>
+      </section>
+
+      <section>
+        {book.length > 0 ? (
           <Slider {...settings}>
             {book.map((item) => (
-              <Cards item={item} key={item.id} />
+              <Cards key={item._id || item.id} item={item} />
             ))}
           </Slider>
-        </div>
-      </div>
-    </>
+        ) : (
+          <p className="text-center text-gray-500">No free courses available right now.</p>
+        )}
+      </section>
+    </div>
   );
 }
+
 export default Freebook;
